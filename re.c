@@ -2,14 +2,14 @@
 #include <stdio.h>
 #include <err.h>
 #include <string.h>
-
+#include "banner.h"
 
 struct matcher_state
 {
   int n;
   pcre **pcres;
 };
-typedef struct matcher_state matcher_state;
+//typedef struct matcher_state matcher_state;
 
 static const char *patterns[] = {
   "xxx {{addr}}",
