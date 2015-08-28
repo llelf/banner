@@ -12,10 +12,25 @@ struct matcher_state
 typedef struct matcher_state matcher_state;
 
 static const char *patterns[] = {
-  "xxx (\\d+)",
-  "yyy (\\d+)"
+  "xxx {{addr}}",
+  "yyy {{addr}}"
 };
 
+
+const char addr_regex[] = "[0-9:.]+";
+
+
+static char *
+replace_addr_re (const char *pat, char *re)
+{
+  const char addr_Lit[] = "{{addr}}";
+  const char *a = strstr (pat, addr_Lit);
+  if (a == 0)
+    return 0;
+
+  sprintf (re, "%*s%s%s", (int) (pat - a), pat, addr_regex, pat + sizeof addr_Lit);
+  return re;
+}
 
 int
 matcher_init (matcher_state *mstate)
@@ -28,12 +43,20 @@ matcher_init (matcher_state *mstate)
 
   for (int i = 0; i < n; i++)
     {
+      char *re_str = alloca (strlen (patterns[i]) + sizeof addr_regex);
+      char *r = replace_addr_re (patterns[i], re_str);
+      if (r == 0)
+	{
+	  warnx ("no address info in `%s'\n", re_str);
+	  return 1;
+	}
+
       const char *errstr;
       int erroffset;
-      pcre *re = pcre_compile (patterns[i], 0, &errstr, &erroffset, 0);
+      pcre *re = pcre_compile (re_str, 0, &errstr, &erroffset, 0);
       if (re == 0)
 	{
-	  warnx ("invalid pattern `%s'\n", patterns[i]);
+	  warnx ("invalid pattern `%s'\n", re_str);
 	  return 1;
 	}
 
