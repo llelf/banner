@@ -1,11 +1,12 @@
-#include <sys/event.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <err.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/event.h>
 #include "banner.h"
-#include <stdio.h>
 
 static const char *log_files[] = {
   "log",
