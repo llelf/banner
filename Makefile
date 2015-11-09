@@ -1,7 +1,7 @@
 
-FILES = banner.c re.c addr.c
+FILES = banner.c re.c addr.c watcher.c
 CFLAGS = -Wall -Wno-unused-function
 
-banner: ${FILES}
-	gcc ${CFLAGS} -o $@ $^ -lpcre
+banner: ${FILES} banner.h
+	gcc ${CFLAGS} -o $@ ${FILES} -lpcre
 

@@ -14,7 +14,7 @@ static const char *log_files[] = {
 
 struct watch_state
 {
-  char buf[5];
+  char buf[512];
   char *bufptr;
   char *bufend;
   bool ignore_this_line;
@@ -23,14 +23,15 @@ struct watch_state
 
 
 void
-handle_log_line (const char *str)
+handle_log_line (const matcher_state *matcher, const char *str)
 {
-  printf ("LOG `%s'\n", str);
+  int r = match (matcher, str);
+  printf ("LOG `%s' match=%d\n", str, r);
 }
 
 
 void
-watcher ()
+watcher (const matcher_state *matcher)
 {
   int kq = kqueue ();
 
@@ -78,7 +79,7 @@ watcher ()
 	      *lf++ = '\0';
 	      
 	      if (! st->ignore_this_line)
-		handle_log_line (st->buf);
+		handle_log_line (matcher, st->buf);
 	      else
 		st->ignore_this_line = false;
 	      

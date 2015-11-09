@@ -1,11 +1,6 @@
 #include <stdio.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <errno.h>
 #include <sys/event.h>
-#include <string.h>
-#include <stdbool.h>
-#include <err.h>
 #include "banner.h"
 
 
@@ -18,7 +13,12 @@ init ()
 
 int main ()
 {
+  matcher_state *matcher;
+  matcher_init (&matcher);
 
+  watcher (matcher);
+
+  printf ("wtf");
 }
 
 

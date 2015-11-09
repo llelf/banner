@@ -28,17 +28,18 @@ replace_addr_re (const char *pat, char *re)
   if (a == 0)
     return 0;
 
-  sprintf (re, "%*s%s%s", (int) (pat - a), pat, addr_regex, pat + sizeof addr_Lit);
+  sprintf (re, "%.*s%s%s", (int) (a - pat), pat, addr_regex, a + strlen (addr_Lit));
   return re;
 }
 
 int
-matcher_init (matcher_state *mstate)
+matcher_init (matcher_state **mstate)
 {
   const int n = sizeof patterns / sizeof patterns[0];
-  *mstate = (matcher_state) {
+  *mstate = malloc (sizeof (matcher_state));
+  **mstate = (matcher_state) {
     .n = n,
-    .pcres = calloc (n, sizeof *mstate->pcres)
+    .pcres = calloc (n, sizeof (*mstate)->pcres)
   };
 
   for (int i = 0; i < n; i++)
@@ -51,6 +52,8 @@ matcher_init (matcher_state *mstate)
 	  return 1;
 	}
 
+      printf ("RE `%s'\n", re_str);
+
       const char *errstr;
       int erroffset;
       pcre *re = pcre_compile (re_str, 0, &errstr, &erroffset, 0);
@@ -60,7 +63,7 @@ matcher_init (matcher_state *mstate)
 	  return 1;
 	}
 
-      mstate->pcres[i] = re;
+      (*mstate)->pcres[i] = re;
     }
 
   return 0;
@@ -68,7 +71,7 @@ matcher_init (matcher_state *mstate)
 
 
 int
-match (matcher_state *matcher, const char *line)
+match (const matcher_state *matcher, const char *line)
 {
   for (int i = 0; i < matcher->n; i++)
     {
