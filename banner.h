@@ -1,3 +1,7 @@
+#pragma once
+
+typedef const char *address;
+int addr_parse (const char *str, address *addr);
 
 
 typedef struct matcher_state matcher_state;

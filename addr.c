@@ -1,9 +1,10 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <string.h>
+#include "banner.h"
 
 int
-addr_parse (const char *str, char **norm)
+addr_parse (const char *str, address *norm)
 {
   struct addrinfo hints = {
     .ai_family = PF_UNSPEC,
@@ -30,11 +31,4 @@ addr_parse (const char *str, char **norm)
   return 0;
 }
 
-void
-amain ()
-{
-  char *res;
-  addr_parse ("::1x", &res);
-  //printf ("%s\n", res);
-}
 
