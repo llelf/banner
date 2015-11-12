@@ -8,10 +8,6 @@
 #include <sys/event.h>
 #include "banner.h"
 
-static const char *log_files[] = {
-  "log",
-  "log1"
-};
 
 struct watch_state
 {
@@ -32,23 +28,33 @@ handle_log_line (const matcher_patterns *matcher, const char *str)
 
 
 void
-watcher (const matcher_patterns *pats)
+watcher (const struct logfiles *files, const matcher_patterns *pats)
 {
-  int kq = kqueue ();
+  int n = 0;
+  const struct logfile *log;
+  STAILQ_FOREACH (log, files, logfiles)
+    {
+      n++;
+    }
 
-  int n = sizeof log_files / sizeof log_files[0];
+  int kq = kqueue ();
 
   struct kevent logs[n];
 
   struct watch_state states[n];
 
+  const struct logfile *cur = STAILQ_FIRST (files);
   for (int i = 0; i < n; i++)
     {
-      int fd = open (log_files[i], O_RDONLY);
+      const char *log = cur->log;
+
+      int fd = open (log, O_RDONLY);
       if (fd == -1)
-	err (0, "could not open %s", log_files[i]);
+	err (0, "could not open %s", log);
 
       EV_SET (&logs[i], fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, &states[i]);
+
+      cur = STAILQ_NEXT (cur, logfiles);
     }
 
   struct kevent evs[n];

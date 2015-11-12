@@ -12,14 +12,6 @@ static struct option banner_long_opts[] = {
   { "help",    no_argument, 0, 'h' }
 };
 
-struct logfile
-{
-  const char *log;
-  STAILQ_ENTRY(logfile) logfiles;
-};
-
-STAILQ_HEAD (logfiles, logfile);
-
 
 int
 main_banner (struct logfiles *logfiles)
@@ -27,14 +19,14 @@ main_banner (struct logfiles *logfiles)
   struct logfile *log;
   STAILQ_FOREACH (log, logfiles, logfiles)
     {
-      printf ("log file added `%s'\n", log->log);
+      printf ("log file `%s'\n", log->log);
     }
 
 
   const matcher_patterns *pats;
   matcher_init (&pats);
 
-  watcher (pats);
+  watcher (logfiles, pats);
 
   return 1;
 }
