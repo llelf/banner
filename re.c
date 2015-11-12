@@ -4,12 +4,11 @@
 #include <string.h>
 #include "banner.h"
 
-struct matcher_state
+struct matcher_patterns
 {
   int n;
   pcre **pcres;
 };
-//typedef struct matcher_state matcher_state;
 
 static const char *patterns[] = {
   "xxx {{addr}}",
@@ -33,14 +32,16 @@ replace_addr_re (const char *pat, char *re)
 }
 
 int
-matcher_init (matcher_state **mstate)
+matcher_init (const matcher_patterns **mstate)
 {
   const int n = sizeof patterns / sizeof patterns[0];
-  *mstate = malloc (sizeof (matcher_state));
-  **mstate = (matcher_state) {
+  matcher_patterns *pats = malloc (sizeof (matcher_patterns));
+  *pats = (matcher_patterns) {
     .n = n,
     .pcres = calloc (n, sizeof (*mstate)->pcres)
   };
+
+  *mstate = pats;
 
   for (int i = 0; i < n; i++)
     {
@@ -71,14 +72,14 @@ matcher_init (matcher_state **mstate)
 
 
 int
-match (const matcher_state *matcher, const char *line)
+match (const matcher_patterns *pats, const char *line)
 {
-  for (int i = 0; i < matcher->n; i++)
+  for (int i = 0; i < pats->n; i++)
     {
       int rs[2];
       int rsn = sizeof rs / sizeof rs[0];
 
-      int r = pcre_exec (matcher->pcres[i], 0, line, strlen (line),
+      int r = pcre_exec (pats->pcres[i], 0, line, strlen (line),
 			 0, 0, rs, rsn);
 
       if (r > 0)

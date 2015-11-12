@@ -4,9 +4,9 @@ typedef const char *address;
 int addr_parse (const char *str, address *addr);
 
 
-typedef struct matcher_state matcher_state;
-int matcher_init (matcher_state **mstate);
-int match (const matcher_state *matcher, const char *line);
+typedef struct matcher_patterns matcher_patterns;
+int matcher_init (const matcher_patterns **mstate);
+int match (const matcher_patterns *matcher, const char *line);
 
-void watcher (const matcher_state *mstate);
+void watcher (const matcher_patterns *mstate);
 

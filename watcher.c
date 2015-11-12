@@ -24,7 +24,7 @@ struct watch_state
 
 
 void
-handle_log_line (const matcher_state *matcher, const char *str)
+handle_log_line (const matcher_patterns *matcher, const char *str)
 {
   int r = match (matcher, str);
   printf ("LOG `%s' match=%d\n", str, r);
@@ -32,7 +32,7 @@ handle_log_line (const matcher_state *matcher, const char *str)
 
 
 void
-watcher (const matcher_state *matcher)
+watcher (const matcher_patterns *pats)
 {
   int kq = kqueue ();
 
@@ -80,7 +80,7 @@ watcher (const matcher_state *matcher)
 	      *lf++ = '\0';
 	      
 	      if (! st->ignore_this_line)
-		handle_log_line (matcher, st->buf);
+		handle_log_line (pats, st->buf);
 	      else
 		st->ignore_this_line = false;
 	      

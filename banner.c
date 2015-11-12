@@ -31,10 +31,10 @@ main_banner (struct logfiles *logfiles)
     }
 
 
-  matcher_state *matcher;
-  matcher_init (&matcher);
+  const matcher_patterns *pats;
+  matcher_init (&pats);
 
-  watcher (matcher);
+  watcher (pats);
 
   return 1;
 }
@@ -63,7 +63,7 @@ main (int argc, char *argv[])
 
 	case 'l':
 	  {
-	    struct logfile *log = (struct logfile *) malloc (sizeof log);
+	    struct logfile *log = (struct logfile *) malloc (sizeof (struct logfile));
 	    log->log = optarg;
 	    STAILQ_INSERT_TAIL (&logfiles_list, log, logfiles);
 	  }
