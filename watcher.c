@@ -12,7 +12,7 @@
 struct watch_state
 {
   char buf[512];
-  char *bufptr;
+  char *readat;
   char *bufend;
   bool ignore_this_line;
 };
@@ -63,7 +63,7 @@ watcher (const struct logfiles *files, const matcher_patterns *pats)
   for (int i = 0; i < n; i++)
     {
       struct watch_state *st = &states[i];
-      st->bufptr = st->buf;
+      st->readat = st->buf;
       st->bufend = st->buf + sizeof st->buf;
       st->ignore_this_line = false;
     }
@@ -74,14 +74,21 @@ watcher (const struct logfiles *files, const matcher_patterns *pats)
 
       for (int i = 0; i < nev; i++)
 	{
+	  /*
+                   |       <-  rn   ->               |
+	     |-----|======== read ===\n========\n====|---------|
+	    buf  readat              lf                      bufend
+	           |    handle line   || move at buf |
+	   */
+
 	  struct watch_state *st = (struct watch_state *) evs[i].udata;
 
-	  int rn = read (evs[i].ident, st->bufptr, st->bufend - st->bufptr);
+	  int rn = read (evs[i].ident, st->readat, st->bufend - st->readat);
 
 	  //printf ("== %d/%d, read %d\n", i, nev, rn);
 
 	  char *lf;
-	  while ((lf = memchr (st->buf, '\n', st->bufptr - st->buf + rn)) != 0)
+	  while ((lf = memchr (st->buf, '\n', st->readat - st->buf + rn)) != 0)
 	    {
 	      *lf++ = '\0';
 	      
@@ -91,14 +98,14 @@ watcher (const struct logfiles *files, const matcher_patterns *pats)
 		st->ignore_this_line = false;
 	      
 	      memmove (st->buf, lf, st->bufend - lf);
-	      st->bufptr -= lf - st->buf;
+	      st->readat -= lf - st->buf;
 	    }
 
-	  st->bufptr += rn;
-	  if (st->bufptr >= st->bufend)
+	  st->readat += rn;
+	  if (st->readat >= st->bufend)
 	    {
 	      warnx ("line too big, it is a log for elephants?");
-	      st->bufptr = st->buf;
+	      st->readat = st->buf;
 	      st->ignore_this_line = true;
 	    }
 	}
