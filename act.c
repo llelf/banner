@@ -43,6 +43,7 @@ go_pfctl (const char *pure_argv[])
 int
 add_ban (address addr)
 {
+  banner_log ("ban %s\n", addr);
   return go_pfctl ((const char * []) { pfctl, "-t", table, "-T", "add", addr, 0 });
 }
 
