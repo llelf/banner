@@ -19,11 +19,14 @@ struct watch_state
 
 
 
-void
-handle_log_line (const matcher_patterns *matcher, const char *str)
+static void
+handle_log_line (const matcher_patterns *matcher, address str)
 {
   int r = match (matcher, str);
   printf ("LOG `%s' match=%d\n", str, r);
+
+  if (r)
+    add_ban (str);
 }
 
 

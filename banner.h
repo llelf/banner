@@ -20,3 +20,5 @@ int match (const matcher_patterns *matcher, const char *line);
 
 void watcher (const struct logfiles *files, const matcher_patterns *mstate);
 
+int add_ban (address addr);
+
