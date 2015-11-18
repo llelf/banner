@@ -19,16 +19,33 @@ static const char *patterns[] = {
 const char addr_regex[] = "[0-9:.]+";
 
 
+/* RESULT is written with PAT',
+   where PAT' is PAT with PIECE replaced by SUBST.
+
+   Assumes RESULT is properly alloced
+   (e.g. has len of length(pat) + length(subst)).
+
+   Returns RESULT.
+ */
+static char *
+replace_piece (const char *pat, const char *piece, const char *subst,
+	       char *result)
+{
+  const char *a = strstr (pat, piece);
+  if (a == 0)
+    strcpy (result, pat);
+  else
+    sprintf (result, "%.*s%s%s",
+	     (int) (a - pat), pat, subst, a + strlen (piece));
+
+  return result;
+}
+
 static char *
 replace_addr_re (const char *pat, char *re)
 {
   const char addr_Lit[] = "{{addr}}";
-  const char *a = strstr (pat, addr_Lit);
-  if (a == 0)
-    return 0;
-
-  sprintf (re, "%.*s%s%s", (int) (a - pat), pat, addr_regex, a + strlen (addr_Lit));
-  return re;
+  return replace_piece (pat, addr_Lit, addr_regex, re);
 }
 
 int
