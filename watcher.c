@@ -8,10 +8,11 @@
 #include <sys/event.h>
 #include "banner.h"
 
+enum { max_line_length = 2048 };
 
 struct watch_state
 {
-  char buf[512];
+  char buf[max_line_length];
   char *readat;
   char *bufend;
   bool ignore_this_line;

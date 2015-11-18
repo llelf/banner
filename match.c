@@ -16,7 +16,7 @@ static const char *patterns[] = {
 };
 
 
-const char addr_regex[] = "[0-9:.]+";
+static const char addr_regex[] = "[0-9:.]+";
 
 
 /* RESULT is written with PAT',
