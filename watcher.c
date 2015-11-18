@@ -25,7 +25,7 @@ handle_log_line (const matcher_patterns *matcher, address str)
   int r = match (matcher, str);
   printf ("LOG `%s' match=%d\n", str, r);
 
-  if (r)
+  if (r >= 0)
     add_ban (str);
 }
 
