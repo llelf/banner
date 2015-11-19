@@ -16,7 +16,7 @@ static const char *patterns[] = {
 };
 
 
-static const char addr_regex[] = "[0-9:.]+";
+static const char addr_regex[] = "(?<addr>[0-9:.]+)";
 
 
 /* RESULT is written with PAT',
@@ -88,21 +88,34 @@ matcher_init (const matcher_patterns **mstate)
 }
 
 
+/*
+  Match LINE by PATS.
+  Returns # of matched pattern or -1.
+  ADDR is allocated with matched address.
+ */
 int
-match (const matcher_patterns *pats, const char *line)
+match (const matcher_patterns *pats, const char *line,
+       address *addr)
 {
   for (int i = 0; i < pats->n; i++)
     {
-      int rs[2];
-      int rsn = sizeof rs / sizeof rs[0];
+      const int rsn = 2 * 3; /* all match & addr, 3 offsets for each */
+      int rs[rsn];
+      pcre *re = pats->pcres[i];
 
-      int r = pcre_exec (pats->pcres[i], 0, line, strlen (line),
+      int r = pcre_exec (re, 0, line, strlen (line),
 			 0, 0, rs, rsn);
 
       if (r > 0)
-	return i;
+	{
+	  printf ("match\n");
+	  int got = pcre_get_named_substring (re, line, rs, r, "addr", addr);
+	  if (got > 0)
+	    return i;
+	}
     }
 
+  *addr = 0;
   return -1;
 }
 

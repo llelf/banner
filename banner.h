@@ -16,7 +16,8 @@ STAILQ_HEAD (logfiles, logfile);
 
 typedef struct matcher_patterns matcher_patterns;
 int matcher_init (const matcher_patterns **mstate);
-int match (const matcher_patterns *matcher, const char *line);
+int match (const matcher_patterns *matcher, const char *line,
+	   address *addr);
 
 void watcher (const struct logfiles *files, const matcher_patterns *mstate);
 
