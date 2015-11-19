@@ -1,6 +1,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <string.h>
+#include <stdlib.h>
 #include "banner.h"
 
 int
@@ -29,6 +30,13 @@ addr_parse (const char *str, address *norm)
 
   freeaddrinfo (res);
   return 0;
+}
+
+
+void
+addr_free (address addr)
+{
+  free ((char *) addr);
 }
 
 

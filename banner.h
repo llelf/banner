@@ -3,6 +3,7 @@
 
 typedef const char *address;
 int addr_parse (const char *str, address *addr);
+void addr_free (address addr);
 
 struct logfile
 {

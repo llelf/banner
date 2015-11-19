@@ -29,6 +29,8 @@ handle_log_line (const matcher_patterns *matcher, const char *str)
 
   if (r >= 0)
     add_ban (addr);
+
+  addr_free (addr);
 }
 
 
