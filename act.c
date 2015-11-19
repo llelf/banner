@@ -24,7 +24,7 @@ go_pfctl (const char *pure_argv[])
 
   int status;
   pid_t rp = waitpid (pid, &status, 0);
-  if (rp != 0)
+  if (rp == -1)
     {
       warnc (rp, "abnormal %s behaviour", pfctl_path);
       return -2;
